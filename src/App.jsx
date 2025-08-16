@@ -10,7 +10,7 @@ import { Header } from './components/Header';
 function App() {
   const [currentQuote, setCurrentQuote] = useState(developerQuotes[0]);
   const [currentThemeId, setCurrentThemeId] = useLocalStorage('devquotes-theme', 'light');
-  const [isPremiumUnlocked, setIsPremiumUnlocked] = useLocalStorage('devquotes-premium', false);
+  const [isPremiumUnlocked, setIsPremiumUnlocked] = useLocalStorage('devquotes-premium', true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [quoteKey, setQuoteKey] = useState(0); // For triggering quote animations
 
@@ -25,27 +25,28 @@ function App() {
 
   useEffect(() => {
     getRandomQuote();
+    
+    // Set up interval to change quote every 45 seconds
+    const intervalId = setInterval(() => {
+      getRandomQuote();
+    }, 45000); // 45 seconds in milliseconds
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleThemeChange = (themeId) => {
     setCurrentThemeId(themeId);
   };
 
-  const handleUnlockPremium = () => {
-    // Simulate payment process
-    const confirmed = window.confirm(
-      'This would redirect to a payment processor. For demo purposes, would you like to unlock premium themes?'
-    );
-    
-    if (confirmed) {
-      setIsPremiumUnlocked(true);
-      alert('🎉 Premium themes unlocked! Enjoy lifetime access to all backgrounds.');
-    }
-  };
 
-  const backgroundStyle = currentTheme.backgroundImage ? {
+
+  const backgroundStyle = currentTheme.customStyles ? {
+    ...currentTheme.customStyles
+  } : currentTheme.backgroundImage ? {
     backgroundImage: currentTheme.backgroundImage,
-    backgroundSize: currentTheme.backgroundSize
+    backgroundSize: currentTheme.backgroundSize,
+    backgroundPosition: currentTheme.backgroundPosition || '0 0'
   } : {};
 
   return (
@@ -58,7 +59,6 @@ function App() {
     >
       <Header 
         onMenuClick={() => setIsSidebarOpen(true)}
-        onRefreshQuote={getRandomQuote}
         theme={currentTheme}
       />
 
@@ -79,8 +79,6 @@ function App() {
         onClose={() => setIsSidebarOpen(false)}
         currentTheme={currentTheme}
         onThemeChange={handleThemeChange}
-        isPremiumUnlocked={isPremiumUnlocked}
-        onUnlockPremium={handleUnlockPremium}
       />
 
       {/* Keyboard shortcuts info */}

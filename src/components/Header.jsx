@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion';
-import { Menu, RefreshCw } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import { useState } from 'react';
 
-export function Header({ onMenuClick, onRefreshQuote, theme }) {
+export function Header({ onMenuClick, theme }) {
+  // Determine text color based on theme background
+  const textColor = theme.background.includes('white') || 
+                    theme.background.includes('light') ? 
+                    'text-gray-800' : 'text-gray-100';
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
@@ -32,21 +37,6 @@ export function Header({ onMenuClick, onRefreshQuote, theme }) {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="flex gap-3"
         >
-          {/* Refresh Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onRefreshQuote}
-            className={`
-              p-3 rounded-full backdrop-blur-sm border
-              ${theme.card} ${theme.text}
-              hover:bg-opacity-80 transition-all duration-200
-            `}
-            title="New Quote"
-          >
-            <RefreshCw size={20} />
-          </motion.button>
-
           {/* Menu Button */}
           <motion.button
             whileHover={{ scale: 1.05 }}

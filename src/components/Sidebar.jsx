@@ -2,15 +2,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Lock, Crown } from 'lucide-react';
 import { themes } from '../data/themes';
 
-export function Sidebar({ isOpen, onClose, currentTheme, onThemeChange, isPremiumUnlocked, onUnlockPremium }) {
+export function Sidebar({ isOpen, onClose, currentTheme, onThemeChange }) {
   const freeThemes = Object.values(themes).filter(theme => !theme.isPremium);
   const premiumThemes = Object.values(themes).filter(theme => theme.isPremium);
 
   const handleThemeSelect = (themeId) => {
-    const theme = themes[themeId];
-    if (theme.isPremium && !isPremiumUnlocked) {
-      return; // Don't allow selection of locked themes
-    }
     onThemeChange(themeId);
   };
 
@@ -89,40 +85,23 @@ export function Sidebar({ isOpen, onClose, currentTheme, onThemeChange, isPremiu
                       key={theme.id}
                       theme={theme}
                       isSelected={currentTheme.id === theme.id}
-                      isLocked={!isPremiumUnlocked}
+                      isLocked={false}
                       onClick={() => handleThemeSelect(theme.id)}
                       currentTheme={currentTheme}
                     />
                   ))}
                 </div>
 
-                {/* Unlock Button */}
-                {!isPremiumUnlocked && (
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={onUnlockPremium}
-                    className={`
-                      w-full mt-6 px-6 py-4 rounded-xl font-semibold
-                      transition-all duration-200
-                      ${currentTheme.button}
-                      shadow-lg hover:shadow-xl
-                    `}
-                  >
-                    🔓 Unlock All Backgrounds – Lifetime Access
-                  </motion.button>
-                )}
+             
 
-                {isPremiumUnlocked && (
-                  <div className={`
-                    w-full mt-6 px-6 py-4 rounded-xl text-center
-                    ${currentTheme.card} border
-                  `}>
-                    <span className={`text-sm font-medium ${currentTheme.accent}`}>
-                      ✨ Premium Unlocked!
-                    </span>
-                  </div>
-                )}
+                <div className={`
+                  w-full mt-6 px-6 py-4 rounded-xl text-center
+                  ${currentTheme.card} border
+                `}>
+                  <span className={`text-sm font-medium ${currentTheme.accent}`}>
+                    ✨ Premium Unlocked!
+                  </span>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -164,9 +143,12 @@ function ThemeCard({ theme, isSelected, isLocked, onClick, currentTheme }) {
                 w-full h-full ${theme.background}
                 ${theme.backgroundImage ? '' : ''}
               `}
-              style={theme.backgroundImage ? {
+              style={theme.customStyles ? {
+                ...theme.customStyles
+              } : theme.backgroundImage ? {
                 backgroundImage: theme.backgroundImage,
-                backgroundSize: theme.backgroundSize
+                backgroundSize: theme.backgroundSize,
+                backgroundPosition: theme.backgroundPosition || '0 0'
               } : {}}
             />
           </div>
